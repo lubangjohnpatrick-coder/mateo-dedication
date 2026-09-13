@@ -13,11 +13,11 @@ Use a local server for reliable downloads; opening index.html directly with file
 
 ## What changed
 
-- A properly proportioned chocolate passport cover, reference-style gold crest, passport symbol, barcode, and left-spine 3D opening. The closed cover remains landscape like the supplied Front reference, completes a visible orientation turn before opening, and then reveals one fixed portrait inside page like the supplied Inside(3) reference: story/map panel above, SAVE THE DATE divider, event details with the upright baby photo, stamp, and passport character strip below.
+- A properly proportioned chocolate passport cover, reference-style gold crest, passport symbol, and left-spine 3D opening. The closed cover is a centered portrait cover with a brief orientation turn before opening, and the open passport reveals the two facing pages side by side (a landscape spread): the aqua verse/compass page on the left and the white SAVE THE DATE / event details page on the right.
 - Royal blue, aqua, white, and gold inside pages with the supplied world map and immigration stamp.
-- The inside follows the latest vertical passport sample as one fixed portrait page: verse/map story panel above, SAVE THE DATE band, event details, and MRZ strip below. It remains readable on phones and desktop.
+- The inside follows the two-facing-pages spread across the whole open passport — both pages are visible at once on phones and desktop.
 - The new boarding-pass treatment uses the requested Graduate, Stardos Stencil, Roboto Mono Bold, Roboto Slab Bold, Arial, and Courier New assignments. Graduate, Stardos Stencil, and Roboto Mono are requested from Google Fonts with system fallbacks; the earlier Courgette, Lobster, Roboto Slab, and Barlow Condensed files remain bundled locally.
-- The supplied baby photo is kept in `assets/baby-photo-portrait.jpg` as a direct portrait crop from the latest vertical reference. The earlier `assets/baby-photo.jpg` and separately supplied `mateo.jpg` are retained for comparison.
+- The supplied baby photo is kept in `assets/baby-photo-portrait.jpg` as the portrait crop for the right page event details panel. The earlier `assets/baby-photo.jpg` and separately supplied `mateo.jpg` are retained for comparison.
 - RSVP **saves directly to your Google Form** with zero backend: the form values are posted to the form's `formResponse` endpoint inside a hidden iframe (no Apps Script, no CORS). Preview-only labels appear only when the direct-form configuration is missing.
 - Personalized boarding pass popup, guest count including the respondent, a reference number, View My Boarding Pass button, and a visible **Save Boarding Pass Photo** action. The on-screen pass uses one fixed 1314 × 621 landscape reference canvas; desktop and phones uniformly scale or horizontally scroll that same geometry instead of reflowing it. The export is always the same 1414 × 680 landscape PNG (2× backing resolution), with the aqua map panel, vertical barcode, QR pair, Matthew 19:14 stub, and gold GATE 2 / SEAT B3 card from the supplied reference.
 - Wrapped long names and venue details in the downloadable pass.
@@ -117,7 +117,7 @@ Keep the Google Sheet private to the organizer. The optional QR codes lead only 
 - `index.html` — page content, form, and popup markup
 - `css/style.css` — reference design, responsive layouts, animation
 - `css/fonts.css` and `assets/fonts/` — bundled fonts and licenses plus the boarding-pass web-font mapping
-- `assets/baby-photo-portrait.jpg` — direct portrait crop used in the vertical invitation details panel
+- `assets/baby-photo-portrait.jpg` — portrait crop used in the right page event details panel
 - `assets/boarding-background.png`, `assets/boarding-arrow.png`, `assets/boarding-barcode.png`, `assets/church-qr.png`, `assets/reception-qr.png` — supplied boarding-pass artwork used on screen and in exports
 - `js/config.js` — organizer configuration
 - `js/script.js` — interaction, sounds, RSVP, QR, download

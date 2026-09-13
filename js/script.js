@@ -9,16 +9,12 @@
 
   var CONFIG = window.MATEO_CONFIG;
 
-  /* Preview mode = honest, labelled, non-saving fallback. Off (i.e. real saving) whenever there  */
-  /*   is a working save target: an Apps Script web app OR a direct Google Form POST (hidden      */
-  /*   iframe — Apps Script-free, no CORS).                                                      */
-  var hasAppsScript = typeof CONFIG.scriptUrl === 'string' &&
-    /script\.google\.com\/macros\/s\//.test(CONFIG.scriptUrl);
-  var hasDirectForm = (typeof CONFIG.formResponse === 'string' &&
-    /docs\.google\.com\/forms/.test(CONFIG.formResponse)) &&
-    typeof CONFIG.fbzx === 'string' && CONFIG.fbzx.length > 0 &&
-    typeof CONFIG.formEntries === 'object' && CONFIG.formEntries;
-  var isPreview = !(hasAppsScript || hasDirectForm);
+/* Preview mode = honest, labelled, non-saving mode. RSVP is always sent
+      through the Google Form link opened in a new tab — GitHub static hosting
+      cannot read the submitted response — so the on-page boarding pass is a
+      clearly-labelled preview and the site never claims it auto-created a
+      personalised pass from an attendee name.                            */
+   var isPreview = true;
 
   var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var supports3d = (function () {
@@ -29,12 +25,9 @@
   var $ = function (id) { return document.getElementById(id); };
   var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
 
-  var activeGuestName = '';
-  var activeTicket = '';
-  var activeParty = '';
-  var lastPayload = null;
-  var pendingPayload = null;
-  var requestId = '';
+  var activeGuestName = 'MATEO GRAY\u2019S GUEST';
+  var activeTicket = 'PREVIEW-GUEST-001';
+  var activeParty = '1 guest \u00b7 Preview';
   var audioUnlocked = false;
 
   /* ==========================================================
@@ -68,24 +61,20 @@
 
     if (CONFIG.gate) $('bpGate').textContent = 'GATE ' + CONFIG.gate;
     if (CONFIG.seat) $('bpSeat').textContent = 'SEAT ' + CONFIG.seat;
-    if (!CONFIG.gate && !CONFIG.seat) {
-      var optGrid = $('bpOptionalGrid');
-      if (optGrid && optGrid.parentNode) optGrid.parentNode.removeChild(optGrid);
+
+    var passMsg = $('passPreview');
+    if (passMsg) { passMsg.hidden = false; passMsg.textContent = 'PREVIEW \u00b7 RSVP VIA GOOGLE FORMS'; }
+
+    var bpTitle = $('bpTitle');
+    if (bpTitle) {
+      var l1 = bpTitle.querySelector('.bp-heading-line1');
+      if (l1) l1.textContent = 'Your boarding pass preview';
+      var l2 = bpTitle.querySelector('.bp-heading-line2');
+      if (l2) l2.textContent = 'A clearly-labelled preview \u2014 RSVP through the Google Form (new tab) to be counted on the guest list.';
     }
 
-    var note = $('integrationNote');
-    note.textContent = isPreview ? 'Preview only — responses are not saved here yet. To send your RSVP now, use the Google Form below.' : 'Your response will be saved to the organizer’s guest list.';
-    note.className = isPreview ? 'form-note warn' : 'form-note';
-    $('googleFormLink').href = CONFIG.formUrl;
-    $('rsvpSubmit').querySelector('.btn-label').textContent = isPreview ? 'Preview My Response' : 'Send Confirmation';
-    $('rsvpTrigger').innerHTML = (isPreview ? 'RSVP / Preview Invitation' : 'Confirm Attendance') + ' <span aria-hidden="true">→</span>';
-    $('viewPass').hidden = true;
-    $('passPreview').hidden = !isPreview;
-    if (isPreview) {
-      $('bpTitle').querySelector('.bp-heading-line1').textContent = 'Your boarding pass preview';
-      $('bpTitle').querySelector('.bp-heading-line2').textContent = 'Here’s how your personalized invitation will look.';
-    }
-
+    var view = $('viewPass');
+    if (view) view.hidden = true;
   }
 
   /* ==========================================================
@@ -302,6 +291,7 @@
       passport.dataset.state = 'open';
       cover.removeAttribute('aria-busy');
       $('heroActions').hidden = false;
+      $('viewPass').hidden = false;
       $('spread').inert = false;
       nav.hidden = false;
       $('spread').setAttribute('aria-hidden', 'false');
@@ -325,6 +315,7 @@
     cover.removeAttribute('aria-busy');
     cover.tabIndex = 0;
     $('heroActions').hidden = true;
+    $('viewPass').hidden = true;
     $('openingHint').hidden = false;
     nav.hidden = true;
     $('spread').inert = true;
@@ -353,7 +344,7 @@
   var openModalId = null;
 
   function anyModalOpen() {
-    return ['rsvpModal', 'thanksModal', 'bpModal'].some(function (id) { return $(id).hidden === false; });
+    return $('bpModal').hidden === false;
   }
 
   function showModal(id) {
@@ -413,9 +404,7 @@
     if (!anyModalOpen()) return;
     if (ev.key === 'Escape') {
       ev.preventDefault();
-      if (!$('bpModal').hidden) hideModal('bpModal', $('rsvpTrigger'));
-      else if (!$('rsvpModal').hidden) hideModal('rsvpModal', $('rsvpTrigger'));
-      else hideModal('thanksModal', $('rsvpTrigger'));
+      hideModal('bpModal', $('rsvpTrigger'));
       return;
     }
     if (ev.key === 'Tab') {
@@ -428,236 +417,36 @@
 
   $$('[data-close]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var target = btn.getAttribute('data-close');
-      if (target === 'rsvp') hideModal('rsvpModal', $('rsvpTrigger'));
-      else if (target === 'thanks') hideModal('thanksModal', $('rsvpTrigger'));
-      else if (target === 'bp') hideModal('bpModal', $('rsvpTrigger'));
+      hideModal('bpModal', $('rsvpTrigger'));
     });
   });
 
-  $('thanksViewInvite').addEventListener('click', function () {
-    hideModal('thanksModal');
-    if (!opened) openPassport(true);
-  });
   $('bpViewInvite').addEventListener('click', function () {
     hideModal('bpModal');
     if (!opened) openPassport(true);
   });
 
   /* ==========================================================
-     RSVP modal
+     RSVP: one action only — open the Google Form in a new tab.
+     There is no custom questionnaire, and because static hosting
+     cannot read the submitted response, the boarding pass here is
+     an honest labelled preview (never a claimed personalised pass).
      ========================================================== */
-  var rsvpForm = $('rsvpForm');
-  var rsvpStatus = $('rsvpStatus');
-  var rsvpSubmit = $('rsvpSubmit');
-  var guestCountField = $('rsvpGuests');
-  var companionsField = $('rsvpCompanions');
+  var rsvpTrigger = $('rsvpTrigger');
 
-  $('rsvpTrigger').addEventListener('click', function () { showModal('rsvpModal'); });
-
-  function setStatus(msg, kind) {
-    rsvpStatus.textContent = msg;
-    rsvpStatus.className = 'form-status' + (kind ? ' ' + kind : '');
-  }
-  function setSubmitting(submitting) {
-    rsvpSubmit.disabled = submitting;
-    rsvpForm.setAttribute('aria-busy', String(submitting));
-    Array.from(rsvpForm.elements).forEach(function(el){ if (el !== rsvpSubmit) el.disabled = submitting; });
-    if (!submitting) {
-      var radio = rsvpForm.querySelector('input[name=attend]:checked');
-      setDeclined(radio && radio.value.indexOf('cannot') !== -1);
-    }
-    rsvpSubmit.classList.toggle('sending', submitting);
-  }
-
-  /* "Cannot attend" → guest-count and companions no longer apply. */
-  function setDeclined(declined) {
-    guestCountField.closest('.field').classList.toggle('disabled', declined);
-    companionsField.closest('.field').classList.toggle('disabled', declined);
-    guestCountField.disabled = declined;
-    companionsField.disabled = declined;
-    if (declined) {
-      // Retain the draft when switching attendance options.
-    }
-  }
-  $$('input[name="attend"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-      setDeclined(radio.value.indexOf('cannot') !== -1);
-    });
+  rsvpTrigger.addEventListener('click', function () {
+    var url = CONFIG.formUrl ||
+      'https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/viewform';
+    window.open(url, '_blank', 'noopener');
+    try { rsvpTrigger.blur(); } catch (e) { /* ignore */ }
+    toast('Opening the RSVP form in a new tab\u2026');
   });
-
-  function guestPayload() {
-    var name = $('rsvpName').value.trim();
-    var phone = $('rsvpPhone').value.trim();
-    var checked = rsvpForm.querySelector('input[name="attend"]:checked');
-    var declined = checked && checked.value.indexOf('cannot') !== -1;
-    var guestCount = declined ? '' : $('rsvpGuests').value;
-    var companions = declined ? '' : $('rsvpCompanions').value.trim();
-
-    if (!name) { setStatus('Please enter your full name.', 'error'); $('rsvpName').focus(); return null; }
-    if (!checked) { setStatus('Please choose whether you will attend.', 'error'); return null; }
-    if (!declined && !guestCount) {
-      setStatus('Please tell us how many guests are coming with you.', 'error');
-      $('rsvpGuests').focus();
-      return null;
-    }
-    return {
-      name: name,
-      phone: phone,
-      attend: checked.value,
-      guestCount: guestCount || (declined ? '0' : 'Just me'),
-      companions: companions
-    };
-  }
-
-  rsvpForm.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    if (rsvpSubmit.disabled) return;
-    var payload = guestPayload();
-    if (!payload) return;
-    var signature = JSON.stringify(payload);
-    if (signature !== pendingPayload) { pendingPayload = signature; requestId = newRequestId(); }
-    payload.requestId = requestId;
-    setSubmitting(true);
-    setStatus(isPreview ? 'Simulating a successful response\u2026 (preview)' : 'Sending your confirmation\u2026', 'sending');
-    saveRsvp(payload);
-  });
-
-  function rsvpSucceeded(payload, ticket) {
-    setSubmitting(false);
-    setStatus('', '');
-    activeTicket = (isPreview ? 'PREVIEW-' : 'MG-') + (ticket || payload.requestId).slice(0, 12).toUpperCase();
-    activeParty = partyText(payload.guestCount);
-    lastPayload = payload;
-    pendingPayload = null;
-    requestId = '';
-    rsvpForm.reset();
-    setDeclined(false);
-
-    var declined = payload.attend.indexOf('cannot') !== -1;
-    if (declined) {
-      $('thanksName').textContent = payload.name;
-      $('viewPass').hidden = true;
-      $('thanksPreview').textContent = isPreview ? 'Preview only — this response has not been saved. Please use the Google Form to send your RSVP.' : 'Your response has been saved. Thank you for letting us know.';
-      hideModal('rsvpModal');
-      showModal('thanksModal');
-      Sounds.chime(false);
-      return;
-    }
-
-    $('viewPass').hidden = false;
-    buildBoardingPass(payload.name);
-    hideModal('rsvpModal');
-    showModal('bpModal');
-    var scroll = $('bpScroll');
-    if (scroll) scroll.scrollLeft = 0;
-    Sounds.chime(true);
-    $('boardingPass').classList.remove('reveal');
-    window.setTimeout(function () {
-      if ($('bpModal').hidden) return;
-      var sr = $('stampReveal');
-      if (!isPreview && !prefersReduced) sr.classList.add('show');
-      Sounds.stamp();
-      $('boardingPass').classList.add('reveal');
-      window.setTimeout(function () { sr.classList.remove('show'); }, 1900);
-    }, 500);
-
-    toast(isPreview ? 'Preview only \u2014 your RSVP has not been saved.' : 'Thank you! RSVP saved.');
-  }
-
-  function submitFailed(msg) {
-    setSubmitting(false);
-    setStatus(msg, 'error');
-    /* entered values are intentionally preserved on failure */
-  }
-
-  function saveRsvp(payload) {
-    if (isPreview) { rsvpSucceeded(payload); return; }
-    if (hasAppsScript) {
-      var controller = new AbortController();
-      var timeout = setTimeout(function () { controller.abort(); }, 20000);
-      fetch(CONFIG.scriptUrl, { method: 'POST', body: JSON.stringify(payload), signal: controller.signal, redirect: 'follow' })
-        .then(function (res) { if (!res.ok) throw new Error('Server response'); return res.json(); })
-        .then(function (data) {
-          if (data && data.success === true && typeof data.ticket === 'string') rsvpSucceeded(payload, data.ticket);
-          else submitFailed('We could not save your response. Please check your details and try again.');
-        })
-        .catch(function () {
-          submitFailed('We could not verify that your response was saved. Check your connection and retry; the same request reference will prevent duplicate entries.');
-        })
-        .finally(function () { clearTimeout(timeout); });
-      return;
-    }
-    postToGoogleForm(payload);
-  }
-
-  /* Apps Script-free direct Google Form POST. A hidden named iframe is the submit          */
-  /*   target, so the browser POSTs the form cross-origin with zero CORS preflight and we   */
-  /*   never need to read the (cross-origin) reply — arrival of the load event = delivered. */
-  function postToGoogleForm(payload) {
-    var frameName = 'mateoRsvpFrame';
-    var existing = document.getElementById(frameName);
-    if (existing) existing.parentNode.removeChild(existing);
-
-    var iframe = document.createElement('iframe');
-    iframe.id = frameName;
-    iframe.name = frameName;
-    iframe.style.cssText = 'position:absolute;visibility:hidden;width:0;height:0;border:0;';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = CONFIG.formResponse;
-    form.target = frameName;
-    form.style.display = 'none';
-
-    function addField(name, value) {
-      var input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = (value === undefined || value === null) ? '' : String(value);
-      form.appendChild(input);
-    }
-
-    addField('fbzx', CONFIG.fbzx);
-    addField('fvv', 1);
-    addField('pageHistory', 0);
-    addField('draftResponse', '[]');
-
-    var e = CONFIG.formEntries;
-    addField(e.name, payload.name);
-    addField(e.phone, payload.phone);
-    addField(e.attend, payload.attend);
-    addField(e.guests, payload.guestCount);
-    addField(e.companions, payload.companions);
-
-    var done = false;
-    var timer = setTimeout(function () {
-      if (done) return; done = true;
-      finishFormPost();
-    }, 15000);
-
-    function finishFormPost() {
-      clearTimeout(timer);
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      if (form.parentNode) form.parentNode.removeChild(form);
-      rsvpSucceeded(payload);
-    }
-
-    iframe.addEventListener('load', function () {
-      if (done) return; done = true;
-      finishFormPost();
-    }, false);
-
-    document.body.appendChild(form);
-    form.submit();
-  }
 
   $('viewPass').addEventListener('click', function () {
-    if (!lastPayload || lastPayload.attend.indexOf('cannot') !== -1) return;
-    buildBoardingPass(lastPayload.name);
+    buildBoardingPass();
     $('boardingPass').classList.add('reveal');
     showModal('bpModal');
+    Sounds.paper();
   });
 
   /* ==========================================================
@@ -681,13 +470,11 @@
   window.addEventListener('resize', fitBoardingPass);
 
   function buildBoardingPass(guestName) {
-    activeGuestName = normalizeName(guestName);
+    activeGuestName = normalizeName(guestName) || 'MATEO GRAY\u2019S GUEST';
     $('bpPassenger').textContent = activeGuestName;
     $('bpMrz').textContent = buildMrz();
     $('bpParty').textContent = activeParty;
-    $('bpFootnote').innerHTML = isPreview
-      ? 'This is a <span class="preview-tag">PREVIEW</span> pass \u2014 the RSVP service is not connected, so your response has not been saved.'
-      : 'Celebrating Mateo Gray D. Delos Santos \u00b7 ' + CONFIG.dateLong;
+    $('bpFootnote').innerHTML = 'This is a <span class="preview-tag">PREVIEW</span> pass \u2014 RSVP through the Google Form (new tab) to be counted on the guest list.';
     renderQRCodes();
   }
 

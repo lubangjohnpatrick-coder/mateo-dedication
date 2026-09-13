@@ -292,26 +292,33 @@
     document.body.classList.add('passport-orienting');
     if (fromCover) { Sounds.orient(); }
 
-    // Let the closed passport complete its orientation turn before the hinge opens.
+    // Stage the motion: orient the closed passport, complete the cover flip while
+    // the inside stays hidden, then reveal the inside pages together. This
+    // prevents the cover and inside from ever appearing in the same reveal beat.
     openTimer = window.setTimeout(function () {
       if (!opening) return;
-      opening = false;
-      openTimer = null;
       document.body.classList.remove('passport-orienting');
-      document.body.classList.add('open');
-      passport.dataset.state = 'open';
-      cover.removeAttribute('aria-busy');
-      $('heroActions').hidden = false;
-      $('spread').inert = false;
-      nav.hidden = false;
-      $('spread').setAttribute('aria-hidden', 'false');
-      $('hero').setAttribute('aria-label', 'Open passport invitation');
-      Sounds.paper();
-      window.setTimeout(function () {
-        var t = $('rsvpTrigger');
-        if (t && opened && !anyModalOpen()) t.focus({ preventScroll: true });
-      }, 760);
-    }, prefersReduced ? 0 : 700);
+      document.body.classList.add('passport-flipping');
+      openTimer = window.setTimeout(function () {
+        if (!opening) return;
+        opening = false;
+        openTimer = null;
+        document.body.classList.remove('passport-flipping');
+        document.body.classList.add('open');
+        passport.dataset.state = 'open';
+        cover.removeAttribute('aria-busy');
+        $('heroActions').hidden = false;
+        $('spread').inert = false;
+        nav.hidden = false;
+        $('spread').setAttribute('aria-hidden', 'false');
+        $('hero').setAttribute('aria-label', 'Open passport invitation');
+        Sounds.paper();
+        window.setTimeout(function () {
+          var t = $('rsvpTrigger');
+          if (t && opened && !anyModalOpen()) t.focus({ preventScroll: true });
+        }, 760);
+      }, prefersReduced ? 0 : 1050);
+    }, prefersReduced ? 0 : 820);
   }
   function closePassport() {
     if (!opened && !opening) return;
@@ -328,7 +335,7 @@
     $('openingHint').hidden = false;
     nav.hidden = true;
     $('spread').inert = true;
-    document.body.classList.remove('open','passport-orienting');
+    document.body.classList.remove('open','passport-orienting','passport-flipping');
     $('spread').setAttribute('aria-hidden', 'true');
     $('hero').setAttribute('aria-label', 'Closed passport');
     Sounds.close();

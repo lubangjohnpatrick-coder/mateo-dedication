@@ -13,7 +13,7 @@ Use a local server for reliable downloads; opening index.html directly with file
 
 ## What changed
 
-- A properly proportioned chocolate passport cover, reference-style gold crest, passport symbol, and centered portrait cover with a brief orientation turn before opening. The open passport reveals one fixed portrait page: the aqua verse/compass story on top and the white SAVE THE DATE / event details panel with the portrait baby photo and immigration stamp below, with a full-width MRZ strip along the bottom.
+- A properly proportioned chocolate passport cover, reference-style gold crest, passport symbol, and a two-beat 3D opening: first an orientation turn with subtle perspective, then the cover flips away in depth (`rotateY`) with a drop shadow before the single portrait page inside is revealed. The closed cover is a centered portrait cover. The open passport reveals one fixed portrait page: the aqua verse/compass story on top and the white SAVE THE DATE / event details panel with the portrait baby photo and immigration stamp below, with a full-width MRZ strip along the bottom.
 - Royal blue, aqua, white, and gold inside pages with the supplied world map and immigration stamp.
 - The inside is a single portrait page that is always visible top and bottom at once on phones and desktop — verse and story above, the details panel below with stamp and MRZ strip.
 - The new boarding-pass treatment uses the requested Graduate, Stardos Stencil, Roboto Mono Bold, Roboto Slab Bold, Arial, and Courier New assignments. Graduate, Stardos Stencil, and Roboto Mono are requested from Google Fonts with system fallbacks; the earlier Courgette, Lobster, Roboto Slab, and Barlow Condensed files remain bundled locally.

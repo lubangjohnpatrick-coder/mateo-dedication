@@ -139,25 +139,13 @@ body.open .spread{transform:translate(-50%,-50%) scale(1) rotateZ(0deg)}
   .kidstrip-mrz{font-size:clamp(8px,2.8vw,12px)}
 }
 
-/* ===== v7 front-cover parity: centered like v5 reference, no barcode (appended override) ===== */
-.front-cover .cover-face{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;padding:30px 24px 24px!important;text-align:center}
-.cover-title{position:static!important;right:auto!important;top:auto!important;bottom:auto!important;left:auto!important;margin:7px 0 18px!important;text-align:center!important}
-.cover-emblem{position:static!important;right:auto!important;top:auto!important;left:auto!important;width:71%;max-width:290px;margin:auto!important}
-.cover-name{position:static!important;right:auto!important;bottom:auto!important;left:auto!important;text-align:center!important;margin:26px 0 17px!important}
-.cover-symbol{position:static!important;right:auto!important;bottom:auto!important;left:auto!important;width:42px;margin:0 auto 17px!important}
-.cover-edition{position:static!important;right:auto!important;bottom:auto!important;left:auto!important;text-align:center!important;opacity:.65!important;margin:0!important}
-.cover-barcode-box,.cover-barcode-box *{display:none!important}
-.front-cover{transform-origin:left center}
-/* ===== end v7 cover override =====
-
-/* ===== v7->v5 front-cover parity (appended; same-specificity, later wins =====
-   Makes the mobile media block center the cover exactly like the desktop base
-   (and like reference v5). The barcode box is dead markup now (HTML removed);
-   these rules also hide it everywhere. */
-.cover-face{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;background:radial-gradient(circle at 50% 115%,#e9c66a 1%,#b98d2f 26%,#83601c 56%,#4e3a10 86%,#251a05 100%)!important;padding:30px 24px 24px!important;border-radius:10px!important}
+/* ===== v7->v5 front-cover parity: centered like reference v5, no barcode (appended override) ===== */
+.cover-face{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;background:radial-gradient(circle at 50% 115%,#e9c66a 1%,#b98d2f 26%,#83601c 56%,#4e3a10 86%,#251a05 100%)!important;padding:30px 24px 24px!important;border-radius:10px!important;text-align:center!important}
 .cover-title{position:static!important;right:auto!important;top:auto!important;margin:7px 0 18px!important;text-align:center!important}
 .cover-emblem{position:static!important;right:auto!important;top:auto!important;width:71%!important;max-width:300px!important;margin:auto!important}
 .cover-name{position:static!important;right:auto!important;bottom:auto!important;text-align:center!important;margin:26px 0 17px!important}
 .cover-symbol{position:static!important;right:auto!important;bottom:auto!important;width:42px!important;margin:0 auto 17px!important;flex-shrink:0!important}
 .cover-edition{position:static!important;right:auto!important;bottom:auto!important;text-align:center!important;opacity:.65!important;margin:0!important}
 .cover-barcode-box,.cover-barcode-box img,.cover-barcode-box span{display:none!important}
+.front-cover{transform-origin:left center}
+/* ===== end v7 cover override ===== */

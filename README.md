@@ -18,7 +18,7 @@ Use a local server for reliable downloads; opening index.html directly with file
 - The inside follows the latest vertical passport sample as one fixed portrait page: verse/map story panel above, SAVE THE DATE band, event details, and MRZ strip below. It remains readable on phones and desktop.
 - The new boarding-pass treatment uses the requested Graduate, Stardos Stencil, Roboto Mono Bold, Roboto Slab Bold, Arial, and Courier New assignments. Graduate, Stardos Stencil, and Roboto Mono are requested from Google Fonts with system fallbacks; the earlier Courgette, Lobster, Roboto Slab, and Barlow Condensed files remain bundled locally.
 - The supplied baby photo is kept in `assets/baby-photo-portrait.jpg` as a direct portrait crop from the latest vertical reference. The earlier `assets/baby-photo.jpg` and separately supplied `mateo.jpg` are retained for comparison.
-- Preview-only labels until an RSVP backend is connected, plus a working link to your original Google Form.
+- RSVP **saves directly to your Google Form** with zero backend: the form values are posted to the form's `formResponse` endpoint inside a hidden iframe (no Apps Script, no CORS). Preview-only labels appear only when the direct-form configuration is missing.
 - Personalized boarding pass popup, guest count including the respondent, a reference number, View My Boarding Pass button, and a visible **Save Boarding Pass Photo** action. The on-screen pass uses one fixed 1314 × 621 landscape reference canvas; desktop and phones uniformly scale or horizontally scroll that same geometry instead of reflowing it. The export is always the same 1414 × 680 landscape PNG (2× backing resolution), with the aqua map panel, vertical barcode, QR pair, Matthew 19:14 stub, and gold GATE 2 / SEAT B3 card from the supplied reference.
 - Wrapped long names and venue details in the downloadable pass.
 - The supplied boarding-pass background, chevron strip, barcode crop, and church/reception QR crops are used in the popup and PNG export. The QR crops remain visible as provided; adding verified map URLs in `js/config.js` makes them clickable without replacing the supplied artwork.
@@ -58,37 +58,41 @@ Times New Roman, Georgia, Arial, Arial Narrow, Arial Black, Stencil, and Courier
 
 ## Connect real RSVP saving
 
-**Current state: the custom form is ready for real saving after the one-time Apps Script deployment.** The static GitHub site cannot securely submit to and verify a Google Form by itself. The custom form sends JSON to the Apps Script `/exec` endpoint; the script writes the RSVP to the dedicated Sheet and mirrors it into the supplied Google Form using the prefilled form ID. The boarding pass appears only after the endpoint returns a verified success response.
+**Current state: RSVP submits straight to your published Google Form — no Apps Script deployment required.** The custom form builds a hidden form and posts to `CONFIG.formResponse` (`docs.google.com/forms/.../formResponse`) inside a named iframe, carrying `fbzx`, the page state fields, and the entry IDs from `CONFIG.formEntries`. Google's form-response endpoint accepts the post from any origin and records it in the form's linked Sheet, so the boarding pass is issued as soon as the submission is delivered.
+
+`js/config.js` already contains the verified values:
+
+- `formResponse` — the `/formResponse` URL for the form below
+- `fbzx` — the form's anti-tamper token
+- `formEntries` — entry IDs mapped to `name`, `phone`, `attend`, `guests`, `companions`
+- `scriptUrl` — kept empty (`''`) to enable the direct-form path; paste a deployed Apps Script `/exec` URL here only if you prefer that backend
 
 The Google Form link remains available as a fallback.
 
-1. Create/open the Google Sheet you will use for the organizer's guest list.
-2. Open **Extensions → Apps Script**.
-3. Paste `backend/Code.gs`, save, and deploy a new **Web app**.
-4. Set **Execute as: Me** and **Who has access: Anyone**. Google will request the organizer's authorization.
-5. Copy the deployment URL ending in `/exec`.
-6. Open `js/config.js` and paste it into `scriptUrl`.
-7. Reload the site. The custom form now requires a successful server response before issuing a confirmed pass.
-8. Submit one clearly named test RSVP. Verify it in both the **Dedication RSVPs** sheet and the linked Google Form response destination, then remove the test row as appropriate. Test a decline too.
+1. Create/open a Google Form whose questions are: Full Name, Contact Number (optional), Will you attend? (Yes / No), How many guests are coming with you?, Names of your companions (optional).
+2. Open it in a browser, inspect the source, and copy the `/formResponse` URL, the `fbzx` value, and the five `entry.*` IDs from the form's fields into `js/config.js` (`formResponse`, `fbzx`, `formEntries`). The values already in the file match the live form below, verified September 13, 2026.
+3. Reload the site. Submit one clearly named test RSVP and verify it appears in the form's response destination (open the form's Responses tab). Test a decline and the boarding-pass download too.
+4. No other configuration is needed. Updates you make to the form (new questions, changed options) must be mirrored in `formEntries` and the option text used by the RSVP radios.
 
-If the account does not permit an anonymous web app, or the browser cannot read the Apps Script response, keep the Google Form link available and resolve deployment permissions before inviting guests. Do not replace the fetch with `no-cors`; it would prevent the site from verifying whether saving succeeded.
+Limitations of the direct path: the browser posts into a cross-origin iframe, so the site cannot read Google's confirmation text back. `postToGoogleForm` (in `js/script.js`) therefore treats delivery of the request as success and uses the local `requestId` as the reference; a late-arriving iframe `load` or a 15-second fallback timer finalizes the pass. Google still validates `fbzx` and the entry IDs server-side, so a mistyped ID silently fails to record — always confirm a test row lands in the Sheet. The Apps Script backend in `backend/Code.gs` remains available as an option (set `scriptUrl` to a deployed `/exec` URL) if you want verifiable round-trip confirmation and a dedicated Sheet instead.
 
-The Sheet is the authoritative record. The same request ID is retained when retrying an unchanged failed/uncertain submission within the open page, so a retry returns the original ticket instead of writing another row. Reloading the page starts a new session. This is not a guest identity or one-RSVP-per-person system.
+### The connected Google Form
 
-### Google Form mirror
+The published Google Form (inspected September 13, 2026) is the direct save destination:
 
-The custom questions match the published Google Form, inspected on September 13, 2026:
 https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/viewform
 
-`backend/Code.gs` already contains that form ID in `GOOGLE_FORM_EDIT_ID`. During the first Apps Script deployment, Google asks the organizer to authorize Forms access. The backend then creates a real Form response with the exact question titles and choices:
+`js/config.js` carries that form's `/formResponse` URL, `fbzx`, and the entry IDs from the exact questions:
 
 - Full Name
 - Contact Number (optional)
-- Will you attend?
+- Will you attend? (Yes / No)
 - How many guests are coming with you?
 - Names of your companions (optional)
 
-The form requires a guest-count choice even for a decline. The backend sends **Just me** for that required choice while preserving **Sorry, cannot attend** for attendance, and records 0 attendees in the dedicated Sheet. If mirroring fails, the Sheet row remains valid and is marked **Needs organizer review** rather than being submitted a second time.
+If you repurpose the form, copy its new `/formResponse`, `fbzx`, and the `entry.*` values into `js/config.js`, and make sure the RSVP attendance radios and guest-count values match the form's option text (the form sends `payload.attend` and `payload.guestCount` verbatim).
+
+`backend/Code.gs` remains available as the optional Apps Script backend (`GOOGLE_FORM_EDIT_ID` is preconfigured for that form). With `scriptUrl` empty it is not used; the direct form post is.
 
 ## Other settings
 
@@ -96,14 +100,15 @@ Edit `js/config.js`:
 
 - `maps.church` and `maps.reception`: verified full https map URLs. The supplied QR crops remain visible even while these links are blank; adding a URL makes each QR clickable.
 - `gate` / `seat`: boarding-pass assignments. They start at `2` / `B3` to match the supplied reference and can be edited.
-- `scriptUrl`: deployed Apps Script web app URL.
+- `scriptUrl`: optional deployed Apps Script web app URL. Leave empty (`''`) to use the built-in direct Google Form post.
+- `formResponse` / `fbzx` / `formEntries`: the live Google Form's submit-endpoint URL, anti-tamper token, and the five field IDs. These are what make RSVP saving work without any backend.
 - `formUrl`: fallback Google Form link.
 
 The current design contains the specified September 19, 2026 event text in both HTML and config. If repurposing it for another event, update both, including cover captions, Bible verses, and page metadata.
 
 ## Hosting
 
-Upload this folder's contents to your chosen static host, preserving relative folders and filenames. `index.html` belongs at its root. Use HTTPS. Apps Script remains the separate RSVP backend. No live website was deployed as part of this ZIP update.
+Upload this folder's contents to your chosen static host, preserving relative folders and filenames. `index.html` belongs at its root. Use HTTPS. RSVP saving needs no backend for the direct-Google-Form path; the optional Apps Script deployment powers the alternative backend. No live website was deployed as part of this ZIP update.
 
 Keep the Google Sheet private to the organizer. The optional QR codes lead only to venue maps; attendee details are not placed in URLs. The boarding pass is an invitation keepsake, not a secure event check-in credential.
 

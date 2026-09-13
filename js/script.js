@@ -305,6 +305,7 @@
         openTimer = null;
         document.body.classList.remove('passport-flipping');
         document.body.classList.add('open');
+        _mrzCall();
         passport.dataset.state = 'open';
         cover.removeAttribute('aria-busy');
         $('heroActions').hidden = false;
@@ -336,6 +337,7 @@
     nav.hidden = true;
     $('spread').inert = true;
     document.body.classList.remove('open','passport-orienting','passport-flipping');
+    _mrzCall();
     $('spread').setAttribute('aria-hidden', 'true');
     $('hero').setAttribute('aria-label', 'Closed passport');
     Sounds.close();
@@ -1006,6 +1008,7 @@
     strip.style.letterSpacing=s>0?(Math.round(s*1000)/1000)+'px':prev;
   }
   function _mrzCall(ev){justifyMRZ();}
+  window.justifyMRZ=justifyMRZ;
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_mrzCall);}
   else{_mrzCall();}
   window.addEventListener('load',_mrzCall);

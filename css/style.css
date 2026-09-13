@@ -66,103 +66,113 @@ body.no3d.open .front-cover{transform:none;opacity:0;transition:opacity .2s}body
 }
 
 /* ============================================================
-   Portrait passport, single fixed portrait page (master/inside
-   reference format). Closed = one centered chocolate portrait
-   cover that fills the whole passport. A gentle orientation
-   tilt, then the cover hinges open onto ONE portrait page:
-   verse/story panel up top, SAVE THE DATE + event details
-   below, with the stamp and MRZ strip along the bottom.
+   Vertical passport reference layout
+   The closed cover and the opened invitation use one fixed
+   portrait canvas. The canvas rotates briefly, then the cover
+   hinges away to reveal the story and event panels in order.
    ============================================================ */
 :root{--pw:min(45vw,560px)}
-.passport{width:var(--pw);transform-origin:50% 50%;transform:perspective(1800px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1);will-change:transform;transition:transform 1.15s cubic-bezier(.2,.86,.2,1),filter .85s ease}
-body.passport-orienting .passport{transform:perspective(1800px) translateZ(0) rotateZ(90deg) rotateY(-10deg) scale(.78);filter:drop-shadow(0 24px 28px #25160d45);transition:transform .82s cubic-bezier(.22,.8,.22,1),filter .82s ease}
-body.passport-flipping .passport{transform:perspective(1800px) translateZ(8px) rotateZ(88deg) rotateY(-18deg) scale(.80);filter:drop-shadow(0 30px 32px #25160d55);transition:transform .24s cubic-bezier(.18,.9,.2,1),filter .24s ease}
-body.open .passport{transform:perspective(1800px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1);filter:none;transition:transform 1.15s cubic-bezier(.2,.86,.2,1),filter .5s ease}
-body.no3d.passport-orienting .passport{transform:scale(.98);filter:none}
-body.no3d.passport-flipping .passport{transform:scale(.98);filter:none}
-.book-frame{width:100%;height:calc(var(--pw) * 1.4142)}
-.spread{left:0;right:auto;top:0;bottom:auto;width:100%;height:100%;transform:translateZ(0) scale(.96) rotateZ(-.8deg);transform-origin:center}
-body.passport-flipping .spread{opacity:0;visibility:hidden;transform:translateZ(-4px) scale(.94) rotateZ(-2deg);transition:opacity .24s ease,transform .24s ease,visibility 0s}
-body.open .spread{transform:translateZ(0) scale(1) rotateZ(0deg)}
-.book{left:0;top:0;width:100%;height:100%;inset:auto}
-.page{left:0!important;right:auto!important;width:100%;height:50%;border-radius:0}
-.page-left{top:0!important;border-radius:9px 9px 0 0}
-.page-right{top:50%!important;border-radius:0 0 9px 9px}
-.page-left,.page-right{visibility:visible;opacity:1}
-.page-left-inner,.page-right-inner{width:100%;height:100%;min-height:0}
-.crease{display:none}
-.front-cover{left:0;top:0;width:100%;height:100%;border-radius:10px;transform-origin:center center;transform:perspective(1800px) translateZ(0) rotateY(0deg) rotateZ(0deg) scale(1)}
-body.passport-orienting .front-cover{transform:perspective(1800px) translateZ(38px) rotateY(0deg) rotateZ(-1deg) scale(1);filter:drop-shadow(0 24px 28px #25160d45)}
-body.passport-flipping .front-cover{transform:perspective(1800px) translateZ(52px) rotateY(-165deg) rotateZ(-3deg) scale(.99);filter:drop-shadow(0 30px 32px #25160d55);opacity:1;visibility:visible;transition:transform 1.05s cubic-bezier(.18,.9,.2,1),filter .24s ease}
-body.open .front-cover{transform:perspective(1800px) translateZ(2px) rotateY(-165deg) rotateZ(0deg) scale(.98);opacity:0;visibility:hidden;transition:transform .16s ease,opacity .16s ease,visibility 0s;pointer-events:none}
-body:not(.open):not(.passport-orienting) .front-cover:hover{transform:perspective(1800px) translateZ(5px) rotateY(-2deg) rotateX(1deg)}
-.cover-face,.cover-back{position:absolute;inset:0;overflow:hidden;border-radius:10px}
-.cover-face{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 24px 24px}
-.cover-title{position:static;margin:7px 0 18px;text-align:center}
-.cover-emblem{position:static;width:71%;max-width:280px;margin:auto}
-.cover-name{position:static;margin:26px 0 17px;text-align:center}
-.cover-symbol{position:static;margin:0 auto 17px}
-.cover-edition{position:static;opacity:.65}
-.page-masthead,.page-number,.photo-caption{display:none}
-.page-left-inner{padding:5% 6% 3%;background-color:#9cd6e5;background-image:url('../background.png');background-position:center;background-size:cover}
-.page-right-inner{position:relative;background:repeating-radial-gradient(ellipse at 120% 90%,#21457904 0 2px,transparent 2px 12px),#fffefb}
-.kidstrip-photo{object-fit:cover}
-.verse-block{margin:5% 2% 0;text-align:center}
-.verse{font-size:clamp(13px,2.1vw,20px);line-height:1.6;text-transform:uppercase;text-shadow:1px 1px #fff5}
-.verse-ref{font-size:clamp(12px,1.8vw,18px);margin-top:4%;text-transform:uppercase}
-.left-bottom{margin-top:auto;gap:3%;padding:0 1% 4%;align-items:center}
-.compass{width:27%;max-width:180px}
-.left-title-line1{font-size:clamp(24px,3.6vw,40px)}
-.left-title-line2{font-size:clamp(19px,3vw,32px)}
-.save-the-date{padding:3% 2%;font-size:clamp(20px,4vw,34px);letter-spacing:.12em}
-.right-content{grid-template-columns:28% 1fr;gap:1%;padding:3% 5% 0;align-items:start;min-height:0}
-.kidstrip-photo-wrap{aspect-ratio:.59;width:calc(100% - 10px);margin-inline:auto;border:4px solid #7d2848;outline:none;box-shadow:none}
-.event-details{gap:7%;padding-top:1%;min-width:0}
-.detail-label{font-size:clamp(10px,1.25vw,14px);margin-bottom:3%}
-.detail-value{font-size:clamp(15px,2.15vw,24px);line-height:1.12;overflow-wrap:anywhere}
-.inside-foot{position:absolute;right:5%;bottom:12%;width:28%;padding:0;min-height:0;margin:0}
-.inside-foot p{display:none}
-.stamp{width:100%;max-width:145px;margin-left:auto;opacity:.62}
-.kidstrip-mrz{position:absolute;left:0;right:0;bottom:0;height:14%;padding:2.5% 6%;font-family:'Courier New',monospace;font-size:max(9px,calc(var(--pw) * .88 / 26.4));line-height:1.25;white-space:nowrap;letter-spacing:0;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden}
-.mobile-page-nav{display:none!important}
+.passport{width:var(--pw);transform-origin:50% 50%;transform-style:preserve-3d;transform:perspective(2000px) translateZ(0) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1);will-change:transform;transition:transform 1.15s cubic-bezier(.2,.86,.2,1),filter .85s ease;}
+body.passport-orienting .passport{transform:perspective(2000px) translateZ(0) rotateZ(90deg) rotateY(-14deg) rotateX(2deg) scale(.78);filter:drop-shadow(0 24px 28px #25160d45);transition:transform .82s cubic-bezier(.22,.8,.22,1),filter .82s ease;}
+body.passport-flipping .passport{transform:perspective(2000px) translateZ(8px) rotateZ(88deg) rotateY(-20deg) rotateX(3deg) scale(.80);filter:drop-shadow(0 30px 32px #25160d55);transition:transform .24s cubic-bezier(.18,.9,.2,1),filter .24s ease;}
+body.open .passport{transform:perspective(2000px) translateZ(0) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1);filter:none;transition:transform 1.15s cubic-bezier(.2,.86,.2,1),filter .5s ease;}
+body.no3d.passport-orienting .passport{transform:scale(.98);filter:none;}
+body.no3d.passport-flipping .passport{transform:scale(.98);filter:none;}
+.book-frame{width:100%;height:calc(var(--pw) * 1.4142);transform-style:preserve-3d;}
+.spread{left:0;right:auto;top:0;bottom:auto;width:100%;height:100%;transform-style:preserve-3d;transform:translateZ(0) scale(.96) rotateZ(-.8deg);transform-origin:center;}
+/* Keep the inside fully covered until the front has completed its flip. */
+body.passport-flipping .spread{opacity:0;visibility:hidden;transform:translateZ(-4px) scale(.94) rotateZ(-2deg);transition:opacity .24s ease,transform .24s ease,visibility 0s;}
+body.open .spread{transform:translateZ(0) scale(1) rotateZ(0deg);}
+.book{left:0;top:0;inset:auto;width:100%;height:100%;transform-style:preserve-3d;}
+.book::before{content:'';position:absolute;inset:3px;border-radius:10px;background:linear-gradient(180deg,#fffefa,#eee9df);transform:translateZ(-7px);box-shadow:0 0 0 3px #d0c7b5,0 8px 0 #b9ac96;pointer-events:none;}
+.book::after{content:'';position:absolute;left:0;right:0;top:50%;height:12px;transform:translateY(-50%) translateZ(7px);background:linear-gradient(180deg,transparent,#4e422828 38%,#4e42284a 50%,#4e422810 66%,transparent);pointer-events:none;z-index:4;}
+.page{left:0;right:auto;width:100%;height:50%;border-radius:0;}
+.page-left{top:0;}
+.page-right{top:50%;}
+.page-left,.page-right{visibility:visible;opacity:1;}
+.page-left-inner,.page-right-inner{width:100%;height:100%;min-height:0;}
+.crease{display:none;}
+
+/* Front styling copied from the approved master (1) cover: centered portrait,
+   gold passport typography/crest, and no barcode on the front face. */
+.front-cover{left:0;top:0;width:100%;height:100%;border-radius:10px;transform-origin:center center;transform-style:preserve-3d;backface-visibility:visible;transform:perspective(2000px) translateZ(0) rotateY(0deg) rotateZ(0deg) rotateX(0deg) scale(1);}
+.front-cover::before{content:'';position:absolute;left:-10px;top:6px;bottom:6px;width:13px;border-radius:8px 0 0 8px;background:linear-gradient(90deg,#140905,#5a321a 45%,#1a0d07);box-shadow:-6px 0 12px #1b0e0945;transform:translateZ(-6px);pointer-events:none;z-index:0;}
+.front-cover::after{content:'';position:absolute;inset:5px;border:1px solid #f1c65a3d;border-radius:7px;box-shadow:inset 0 0 0 1px #180c0626;pointer-events:none;z-index:6;}
+.cover-face,.cover-back{border-radius:10px;}
+.cover-face{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;min-height:100%;padding:30px 24px 24px;background:radial-gradient(ellipse at 50% -12%,#8e5c2d55 0%,transparent 43%),repeating-linear-gradient(118deg,#fff2 0 1px,transparent 1px 5px),linear-gradient(145deg,#5b3622 0%,#3b2116 54%,#24130d 100%);box-shadow:inset 0 1px 0 #fff2,inset 13px 0 15px #140a055c,inset -3px 0 2px #fff2,0 24px 42px #24160f46,4px 4px 0 #24150c,7px 6px 0 #d1c6ae;}
+.cover-title{position:static;margin:7px 0 18px;font-size:clamp(36px,5vw,57px);line-height:1;text-align:center;}
+.cover-emblem{position:static;width:71%;max-width:300px;margin:auto;}
+.cover-name{position:static;margin:26px 0 17px;font-size:clamp(16px,2.15vw,24px);line-height:1.4;text-align:center;}
+.cover-symbol{position:static;width:42px;margin:0 auto 17px;flex-shrink:0;filter:drop-shadow(0 2px 1px #1d1008);}
+.cover-edition{position:static;font-size:9px;letter-spacing:.22em;opacity:.65;}
+.cover-barcode-box,.cover-barcode-box img,.cover-barcode-box span{display:none;}
+.cover-side{left:-9px;width:13px;background:linear-gradient(90deg,#140905,#5a321a 45%,#1a0d07);box-shadow:-5px 0 10px #1b0e0945;transform:translateZ(-4px);}
+.cover-title{ text-shadow:0 2px 0 #1d1009,0 0 14px #f2c5541f; }
+.cover-name{ text-shadow:0 1px 0 #1d1009; }
+body.passport-orienting .front-cover{transform:perspective(2000px) translateZ(38px) rotateY(0deg) rotateZ(-1deg) rotateX(1deg) scale(1);filter:drop-shadow(0 24px 28px #25160d45);}
+body.passport-flipping .front-cover{transform:perspective(2000px) translateZ(52px) rotateY(-165deg) rotateZ(-3deg) rotateX(2deg) scale(.99);filter:drop-shadow(0 30px 32px #25160d55);opacity:1;visibility:visible;transition:transform 1.05s cubic-bezier(.18,.9,.2,1),filter .24s ease;}
+/* The cover is already fully flipped before this class reveals the inside. */
+body.open .front-cover{transform:perspective(1800px) translateZ(2px) rotateY(-165deg) rotateZ(0deg) scale(.98);opacity:0;visibility:hidden;transition:transform .16s ease,opacity .16s ease,visibility 0s;pointer-events:none;}
+body:not(.open):not(.passport-orienting):not(.passport-flipping) .front-cover:hover{transform:perspective(2000px) translateZ(5px) rotateY(-2deg) rotateX(1deg);}
+body.passport-flipping .cover-face::before{transform:translateX(160%);}
+body.open .page-left{animation:passport-page-settle .72s .08s both cubic-bezier(.2,.86,.2,1);}
+body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier(.2,.86,.2,1);}
+@keyframes passport-page-settle{from{opacity:.55;transform:translateY(9px) scale(.988)}to{opacity:1;transform:none}}
+
+/* The inside is the supplied portrait sample: story/map, SAVE THE DATE,
+   then the photo/details panel and the passport character strip. */
+.page-masthead,.page-number,.photo-caption{display:none;}
+.page-left-inner{padding:5% 6% 3%;background-color:#9cd6e5;background-image:url('../background.png');background-position:center;background-size:cover;}
+.verse-block{margin:5% 2% 0;text-align:center;}
+.verse{font-size:clamp(13px,2.1vw,20px);line-height:1.6;text-transform:uppercase;text-shadow:1px 1px #fff5;}
+.verse-ref{font-size:clamp(12px,1.8vw,18px);margin-top:4%;text-transform:uppercase;}
+.left-bottom{margin-top:auto;gap:3%;padding:0 1% 4%;align-items:center;}
+.compass{width:27%;max-width:180px;}
+.left-title-line1{font-size:clamp(24px,3.6vw,40px);}
+.left-title-line2{font-size:clamp(19px,3vw,32px);}
+.page-right-inner{position:relative;overflow:hidden;background:repeating-radial-gradient(ellipse at 120% 90%,#21457904 0 2px,transparent 2px 12px),#fffefb;}
+.save-the-date{padding:3% 2%;font-size:clamp(20px,4vw,34px);letter-spacing:.12em;}
+.right-content{grid-template-columns:28% 1fr;gap:1%;padding:3% 5% 0;align-items:start;min-height:0;}
+.kidstrip-photo-wrap{aspect-ratio:.59;width:calc(100% - 10px);margin-inline:auto;border:4px solid #7d2848;outline:none;box-shadow:none;}
+.kidstrip-photo{object-fit:cover;}
+.event-details{gap:7%;padding-top:1%;min-width:0;}
+.detail-label{font-size:clamp(10px,1.25vw,14px);margin-bottom:3%;}
+.detail-value{font-size:clamp(15px,2.15vw,24px);line-height:1.12;overflow-wrap:anywhere;}
+.inside-foot{position:absolute;right:5%;bottom:12%;width:28%;padding:0;min-height:0;margin:0;}
+.inside-foot p{display:none;}
+.stamp{width:100%;max-width:145px;margin-left:auto;opacity:.62;}
+.kidstrip-mrz{position:absolute;left:0;right:0;bottom:0;height:14%;padding:2.5% 6%;font-family:'Courier New',monospace;font-size:max(9px,calc(var(--pw) * .88 / 26.4));line-height:1.25;white-space:nowrap;letter-spacing:0;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;}
+.mobile-page-nav{display:none!important;}
 
 @media(max-width:740px){
-  :root{--pw:min(calc(100vw - 42px),390px)}
-  .passport{width:var(--pw);transform:perspective(1500px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1)}
-  body.passport-orienting .passport{transform:perspective(1500px) translateZ(0) rotateZ(90deg) rotateY(-8deg) scale(.68)}
-  body.passport-flipping .passport{transform:perspective(1500px) translateZ(7px) rotateZ(88deg) rotateY(-14deg) scale(.70)}
-  body.open .passport{transform:perspective(1500px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1)}
-  body.no3d.passport-orienting .passport{transform:scale(.98);filter:none}
-  body.no3d.passport-flipping .passport{transform:scale(.98);filter:none}
-  .book-frame{height:calc(var(--pw) * 1.4142)}
-  .cover-face{padding:24px 18px 22px}
-  .cover-title{font-size:clamp(36px,11vw,49px)}
-  .cover-emblem{width:72%;max-width:250px}
-  .cover-name{font-size:clamp(16px,4.8vw,21px);margin:20px 0 16px}
-  .cover-symbol{width:38px}
-  body.passport-orienting .front-cover{transform:perspective(1500px) translateZ(25px) rotateY(0deg) rotateZ(-1deg) scale(1)}
-  body.passport-flipping .front-cover{transform:perspective(1500px) translateZ(34px) rotateY(-165deg) rotateZ(-3deg) scale(.99)}
-  body.open .front-cover{transform:perspective(1500px) translateZ(2px) rotateY(-165deg) rotateZ(0deg) scale(.98)}
-  .page-left,.page-right,.passport[data-page] .page-left,.passport[data-page] .page-right{visibility:visible!important;opacity:1!important}
-  .front-cover{left:0;width:100%}
-  .page-left-inner{padding:5% 5% 3%}
-  .verse-block{margin:4% 1% 2%}
-  .verse{font-size:clamp(11px,3.2vw,14px);line-height:1.38}
-  .verse-ref{font-size:clamp(10px,2.7vw,12px);margin-top:2%}
-  .left-bottom{gap:4px;padding-bottom:10px}
-  .compass{width:24%}
-  .left-title-line1{font-size:clamp(21px,6vw,28px)}
-  .left-title-line2{font-size:clamp(17px,5vw,22px)}
-  .save-the-date{font-size:clamp(18px,7vw,28px)}
-  .right-content{gap:2%;padding:3% 4% 0;grid-template-columns:30% 1fr}
-  .event-details{gap:4%;padding-top:0}
-  .detail-label{font-size:clamp(8px,2.4vw,10px);margin-bottom:1%}
-  .detail-value{font-size:clamp(12px,3.5vw,16px);line-height:1.1}
-  .kidstrip-photo-wrap{border-width:3px}
-  .inside-foot{right:4%;bottom:15%;width:23%}
-  .stamp{max-width:95px}
+  :root{--pw:min(calc(100vw - 42px),390px);}
+  .passport{width:var(--pw);transform:perspective(1500px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1);}
+  body.passport-orienting .passport{transform:perspective(1500px) translateZ(0) rotateZ(90deg) rotateY(-8deg) scale(.68);}
+  body.passport-flipping .passport{transform:perspective(1500px) translateZ(7px) rotateZ(88deg) rotateY(-14deg) scale(.70);}
+  body.open .passport{transform:perspective(1500px) translateZ(0) rotateZ(0deg) rotateY(0deg) scale(1);}
+  .book-frame{height:calc(var(--pw) * 1.4142);}
+  .cover-face{padding:24px 18px 22px;}
+  .cover-title{font-size:clamp(36px,11vw,49px);}
+  .cover-emblem{width:72%;max-width:250px;}
+  .cover-name{font-size:clamp(16px,4.8vw,21px);margin:20px 0 16px;}
+  .cover-symbol{width:38px;}
+  body.passport-orienting .front-cover{transform:perspective(1500px) translateZ(25px) rotateY(0deg) rotateZ(-1deg) scale(1);}
+  body.passport-flipping .front-cover{transform:perspective(1500px) translateZ(34px) rotateY(-165deg) rotateZ(-3deg) scale(.99);}
+  body.open .front-cover{transform:perspective(1500px) translateZ(2px) rotateY(-165deg) rotateZ(0deg) scale(.98);}
+  .page-left-inner{padding:5% 5% 3%;}
+  .verse-block{margin:4% 1% 2%;}
+  .verse{font-size:clamp(11px,3.2vw,14px);line-height:1.38;}
+  .verse-ref{font-size:clamp(10px,2.7vw,12px);margin-top:2%;}
+  .left-bottom{gap:4px;padding-bottom:10px;}
+  .compass{width:24%;}
+  .left-title-line1{font-size:clamp(21px,6vw,28px);}
+  .left-title-line2{font-size:clamp(17px,5vw,22px);}
+  .save-the-date{font-size:clamp(18px,7vw,28px);}
+  .right-content{gap:2%;padding:3% 4% 0;grid-template-columns:30% 1fr;}
+  .event-details{gap:4%;padding-top:0;}
+  .detail-label{font-size:clamp(8px,2.4vw,10px);margin-bottom:1%;}
+  .detail-value{font-size:clamp(12px,3.5vw,16px);line-height:1.1;}
+  .kidstrip-photo-wrap{border-width:3px;}
+  .inside-foot{right:4%;bottom:15%;width:23%;}
+  .stamp{max-width:95px;}
 }
-
-/* ============================================================
-   end portrait single-page — centered cover + one fixed page
-   ============================================================ */

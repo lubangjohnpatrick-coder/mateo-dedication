@@ -122,7 +122,7 @@ body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier
 /* The inside is the supplied portrait sample: story/map, SAVE THE DATE,
    then the photo/details panel and the passport character strip. */
 .page-masthead,.page-number,.photo-caption{display:none;}
-.page-left-inner{padding:5% 6% 3%;background-color:#9cd6e5;background-image:url('../background.png');background-position:center;background-size:cover;}
+.page-left-inner{padding:5% 6% 3%;background-color:#8ec9dc;background-image:radial-gradient(ellipse at 50% 18%,rgba(255,255,255,.5) 0%,transparent 52%),radial-gradient(ellipse at 50% 115%,rgba(21,62,92,.38) 0%,transparent 62%),url('../background.png');background-position:center;background-size:cover;}
 .verse-block{margin:5% 2% 0;text-align:center;}
 .verse{font-size:clamp(13px,2.1vw,20px);line-height:1.6;text-transform:uppercase;text-shadow:1px 1px #fff5;}
 .verse-ref{font-size:clamp(12px,1.8vw,18px);margin-top:4%;text-transform:uppercase;}
@@ -130,7 +130,7 @@ body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier
 .compass{width:27%;max-width:180px;}
 .left-title-line1{font-size:clamp(24px,3.6vw,40px);}
 .left-title-line2{font-size:clamp(19px,3vw,32px);}
-.page-right-inner{position:relative;overflow:hidden;background:repeating-radial-gradient(ellipse at 120% 90%,#21457904 0 2px,transparent 2px 12px),#fffefb;}
+.page-right-inner{position:relative;overflow:hidden;background:radial-gradient(ellipse at 12% 10%,rgba(185,154,92,.22) 0%,transparent 46%),radial-gradient(ellipse at 50% 118%,rgba(185,154,92,.16) 0%,transparent 55%),repeating-linear-gradient(0deg,transparent 0 47px,rgba(185,154,92,.09) 47px 48px),repeating-radial-gradient(ellipse at 120% 90%,rgba(33,69,121,.04) 0 2px,transparent 2px 12px),linear-gradient(180deg,#fffefb 0%,#f9f4e9 100%);}
 .save-the-date{padding:3% 2%;font-size:clamp(20px,4vw,34px);letter-spacing:.12em;}
 .right-content{grid-template-columns:28% 1fr;gap:1%;padding:3% 5% 0;align-items:start;min-height:0;}
 .kidstrip-photo-wrap{aspect-ratio:.59;width:calc(100% - 10px);margin-inline:auto;border:4px solid #7d2848;outline:none;box-shadow:none;}
@@ -176,4 +176,31 @@ body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier
   .inside-foot{right:4%;bottom:15%;width:23%;}
   .stamp{max-width:95px;}
   .kidstrip-mrz{font-size:clamp(8px,2.8vw,12px);}
+}
+
+/* -- Interior detailing: layered paper edges, fold seams, gold accents,
+      and an opposing page-settle so the halves read as one folded sheet. -- */
+.page-left-inner,.page-right-inner{position:relative;}
+.page{box-shadow:0 1px 0 #e3d7bd,0 8px 14px rgba(36,22,15,.20);}
+.book{box-shadow:inset 0 0 0 1px rgba(231,189,69,.78),inset 1px 1px 0 #fff,0 22px 40px rgba(36,22,15,.32);}
+.spread{perspective:1600px;}
+.page-left::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:12px;background:linear-gradient(180deg,rgba(36,22,15,.22),transparent);pointer-events:none;z-index:5;}
+.page-right::after{content:'';position:absolute;left:0;right:0;top:-2px;height:12px;background:linear-gradient(0deg,rgba(36,22,15,.22),transparent);pointer-events:none;z-index:5;}
+.crease{display:block;position:absolute;left:2%;right:2%;top:calc(50% - 4px);height:8px;z-index:9;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(36,22,15,.28) 50%,transparent);filter:blur(1px);}
+.crease::after{content:'';position:absolute;left:8%;right:8%;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(231,189,69,.85) 22%,rgba(231,189,69,.85) 78%,transparent);}
+.save-the-date{position:relative;}
+.save-the-date::before,.save-the-date::after{content:'';position:absolute;top:56%;height:1px;width:18%;}
+.save-the-date::before{left:0;background:linear-gradient(90deg,transparent,rgba(231,189,69,.73));}
+.save-the-date::after{right:0;background:linear-gradient(270deg,transparent,rgba(231,189,69,.73));}
+.verse-ref{position:relative;}
+.verse-ref::after{content:'';display:block;width:72px;height:1px;margin:14px auto 0;background:linear-gradient(90deg,transparent,#d3a94a,transparent);}
+.left-title::before{content:'';display:block;width:58px;height:2px;margin:0 auto 12px;background:linear-gradient(90deg,transparent,rgba(231,189,69,.56),transparent);}
+body.open .page-left{animation:passport-settle-left .72s .08s both cubic-bezier(.2,.86,.2,1);transform-origin:50% 100%;}
+body.open .page-right{animation:passport-settle-right .72s .16s both cubic-bezier(.2,.86,.2,1);transform-origin:50% 0%;}
+@keyframes passport-settle-left{from{opacity:.45;transform:translateY(-9px) rotateX(-4deg) scale(.986)}to{opacity:1;transform:none}}
+@keyframes passport-settle-right{from{opacity:.45;transform:translateY(9px) rotateX(4deg) scale(.986)}to{opacity:1;transform:none}}
+@media(max-width:740px){
+  .crease{left:2%;right:2%;top:calc(50% - 3px);height:6px;}
+  .save-the-date::before,.save-the-date::after{width:13%;}
+  .verse-ref::after{margin:10px auto 0;width:56px;}
 }

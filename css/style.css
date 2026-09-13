@@ -141,7 +141,7 @@ body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier
 .inside-foot{position:absolute;right:5%;bottom:12%;width:28%;padding:0;min-height:0;margin:0;}
 .inside-foot p{display:none;}
 .stamp{width:100%;max-width:145px;margin-left:auto;opacity:.62;}
-.kidstrip-mrz{position:absolute;left:0;right:0;bottom:0;height:14%;padding:2.5% 6%;font-family:'Courier New',monospace;font-size:max(9px,calc(var(--pw) * .88 / 26.4));line-height:1.25;white-space:nowrap;letter-spacing:0;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;}
+.kidstrip-mrz{position:absolute;left:0;right:0;bottom:0;height:14%;padding:0 5%;font-family:'Courier New',monospace;font-size:clamp(10px,1.45vw,16px);line-height:1.45;white-space:nowrap;letter-spacing:0;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;}
 .mobile-page-nav{display:none!important;}
 
 @media(max-width:740px){
@@ -175,4 +175,5 @@ body.open .page-right{animation:passport-page-settle .72s .16s both cubic-bezier
   .kidstrip-photo-wrap{border-width:3px;}
   .inside-foot{right:4%;bottom:15%;width:23%;}
   .stamp{max-width:95px;}
+  .kidstrip-mrz{font-size:clamp(8px,2.8vw,12px);}
 }

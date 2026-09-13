@@ -994,17 +994,16 @@
     var cs=getComputedStyle(strip);
     var inner=strip.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
     if(!(inner>0)){return;}
+    var target=inner*0.995;
     var prev=strip.style.letterSpacing;
     strip.style.letterSpacing='normal';
-    function spread(node){
-      var len=(node.textContent||'').length;
-      if(len<2){return 0;}
+    function natural(node){
       var r=document.createRange();r.selectNodeContents(node);
-      var w=r.getBoundingClientRect().width;
-      if(!(w>0)||w>=inner){return 0;}
-      return (inner-w)/(len-1);
+      return r.getBoundingClientRect().width;
     }
-    var s=Math.max(spread(t1),spread(t2));
+    var w1=natural(t1),w2=natural(t2);
+    var maxw=Math.max(w1,w2),len=Math.max((t1.textContent||'').length,(t2.textContent||'').length);
+    var s=(maxw>0&&maxw<target&&len>1)?(target-maxw)/(len-1):0;
     strip.style.letterSpacing=s>0?(Math.round(s*1000)/1000)+'px':prev;
   }
   function _mrzCall(ev){justifyMRZ();}

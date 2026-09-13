@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='10' width='52' height='44' rx='7' fill='%23c9a84c'/%3E%3Crect x='10' y='14' width='44' height='36' rx='4' fill='none' stroke='%233a2415' stroke-width='2'/%3E%3Ctext x='32' y='39' font-family='Georgia,serif' font-size='20' font-weight='bold' fill='%233a2415' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="css/fonts.css" />
 <link rel="preload" as="image" href="assets/baby-photo-portrait.jpg" />
-<link rel="stylesheet" href="css/style.css?v=8" />
+<link rel="stylesheet" href="css/style.css?v=9" />
 </head>
 <body id="top">
 
@@ -93,16 +93,105 @@
       <p class="opening-hint" id="openingHint">Your invitation awaits. <span>Tap to rotate &amp; open →</span></p>
       <div class="hero-actions" id="heroActions" hidden>
         <button type="button" class="btn btn-primary" id="rsvpTrigger">Confirm Attendance <span aria-hidden="true">→</span></button>
-        <button type="button" class="btn btn-ghost" id="viewPass" hidden>Preview Boarding Pass</button>
+        <button type="button" class="btn btn-ghost" id="viewPass" hidden>View My Boarding Pass</button>
         <button type="button" class="btn btn-ghost" id="closePassport">Close Passport</button>
       </div>
       <p class="journey-footer">MATEO GRAY <span>✦</span> SEPTEMBER 19, 2026 <span>✦</span> 10:00 AM</p>
     </div>
   </section>
-  <noscript><section class="noscript"><h1>Mateo Gray’s Dedication</h1><p>September 19, 2026 · 10:00 AM · JIACM Church</p><p>Enable JavaScript for the passport experience, or <a href="https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/viewform">RSVP through Google Forms</a>.</p></section></noscript>
+  <noscript><section class="noscript"><h1>Mateo Gray’s Dedication</h1><p>September 19, 2026 · 10:00 AM · JIACM Church</p><p>Enable JavaScript for the passport experience.</p></section></noscript>
 </main>
 
-<!-- ============ RSVP: single action = opens the Google Form in a new tab ============ -->
+<!-- ============ RSVP MODAL ============ -->
+<div class="modal hidden" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle" aria-hidden="true" hidden>
+  <div class="modal-backdrop" data-close="rsvp"></div>
+  <div class="modal-card rsvp-card">
+    <button type="button" class="modal-close" data-close="rsvp" aria-label="Close RSVP form">&times;</button>
+    <div class="modal-heading">
+      <span class="heading-kicker">READY TO JOIN THE JOURNEY?</span>
+      <h2 id="rsvpTitle" class="modal-title">Confirm Attendance</h2>
+      <p class="modal-sub">Please confirm for the dedication of Mateo Gray D. Delos Santos on September 19, 2026.</p>
+    </div>
+
+    <form id="rsvpForm" novalidate>
+      <label class="field" for="rsvpName">
+        <span class="field-label">Full Name <em>*</em></span>
+        <input type="text" id="rsvpName" name="name" maxlength="120" required autocomplete="name" placeholder="Your full name" />
+      </label>
+
+      <label class="field" for="rsvpPhone">
+        <span class="field-label">Contact Number <em class="opt">(optional)</em></span>
+        <input type="tel" id="rsvpPhone" name="phone" maxlength="40" autocomplete="tel" placeholder="09xx xxx xxxx" />
+      </label>
+
+      <fieldset class="field attend-set" id="attendSet">
+        <legend class="field-label">Will you attend? <em>*</em></legend>
+        <div class="attend-options">
+          <label class="attend-opt">
+            <input type="radio" name="attend" value="Yes, I will attend" checked />
+            <span class="attend-pill"><svg class="pill-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 15 9l7 .5-5.5 4.5 1.5 7L12 17l-6 4 1.5-7L2 9.5 9 9z"/></svg>Yes, I will attend</span>
+          </label>
+          <label class="attend-opt">
+            <input type="radio" name="attend" value="Sorry, cannot attend" />
+            <span class="attend-pill attend-pill-no"><svg class="pill-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6 M15 9l-6 6"/></svg>Sorry, cannot attend</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <label class="field guest-count-field" for="rsvpGuests">
+        <span class="field-label">How many guests are coming with you? <em>*</em></span>
+        <select id="rsvpGuests" name="guestCount">
+          <option value="Just me">Just me</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11 or more">11 or more</option>
+        </select>
+      </label>
+
+      <label class="field companions-field" for="rsvpCompanions">
+        <span class="field-label">Names of your companions <em class="opt">(optional)</em></span>
+        <textarea id="rsvpCompanions" name="companions" maxlength="1000" rows="3" placeholder="Ex: Juan Dela Cruz, Maria Santos"></textarea>
+      </label>
+
+      <p class="form-status" id="rsvpStatus" role="status" aria-live="polite"></p>
+
+      <button type="submit" class="btn btn-primary btn-block" id="rsvpSubmit">
+        <span class="btn-label">Send Confirmation</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+      <p class="form-note" id="integrationNote"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ THANK YOU MODAL (declined) ============ -->
+<div class="modal hidden" id="thanksModal" role="dialog" aria-modal="true" aria-labelledby="thanksTitle" aria-hidden="true" hidden>
+  <div class="modal-backdrop" data-close="thanks"></div>
+  <div class="modal-card thanks-card">
+    <button type="button" class="modal-close" data-close="thanks" aria-label="Close thank you message">&times;</button>
+    <div class="thanks-emblem" aria-hidden="true">
+      <svg viewBox="0 0 80 80" class="thanks-heart">
+        <path d="M40 66 C 16 48 8 34 14 22 C 18 14 30 12 40 22 C 50 12 62 14 66 22 C 72 34 64 48 40 66 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M40 56 C 26 44 22 34 25 26 C 28 21 34 20 40 26 C 46 20 52 21 55 26 C 58 34 54 44 40 56 Z" fill="currentColor" opacity="0.35"/>
+      </svg>
+    </div>
+    <h2 id="thanksTitle" class="modal-title">Thank You</h2>
+    <p class="modal-sub">We appreciate you letting us know, <strong id="thanksName"></strong>.</p>
+    <p class="thanks-body">We will surely miss you at the celebration of Mateo Gray&rsquo;s dedication. Please keep our little one in your prayers, and we hope to see you another time.</p>
+    <p id="thanksPreview" class="form-note"></p><div class="thanks-actions">
+      <button type="button" class="btn btn-primary" data-close="thanks">Close</button>
+      <button type="button" class="btn btn-ghost" id="thanksViewInvite">View Invitation</button>
+    </div>
+  </div>
+</div>
 
 <!-- ============ BOARDING PASS MODAL ============ -->
 <div class="modal hidden boarding-modal" id="bpModal" role="dialog" aria-modal="true" aria-labelledby="bpTitle" aria-hidden="true" hidden>
@@ -207,7 +296,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<script src="js/config.js?v=8"></script>
-<script src="js/script.js?v=8" defer></script>
+<script src="js/config.js?v=9"></script>
+<script src="js/script.js?v=9" defer></script>
 </body>
 </html>

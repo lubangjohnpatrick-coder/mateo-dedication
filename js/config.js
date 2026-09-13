@@ -23,9 +23,9 @@ window.MATEO_CONFIG = {
       church: '',       // verified Google Maps link — enables QR
       reception: ''     // verified Google Maps link — enables QR
     },
-    scriptUrl: '',       // Optional Apps Script /exec URL (see backend/Code.gs). The site does not need
-                         //   one: RSVP is a single outbound link to the Google Form below (new tab).
-    formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/viewform?usp=dialog',
+    scriptUrl: '',       // Apps Script /exec Web App URL (see backend/Code.gs). Leave empty to use the
+                         //   Apps Script-free direct Google Form POST below (hidden-iframe technique).
+    formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/viewform?usp=sharing&ouid=107088257804039774174',
     formResponse: 'https://docs.google.com/forms/d/e/1FAIpQLScAuOmAzvQ6JNdb-mUTfGfAYw9mp9Uvv7SWZkjbxv_TO3Xx4w/formResponse',
     fbzx: '-1215003312957695342',
     formEntries: {           // Google Form field IDs, in the order the RSVP form collects them

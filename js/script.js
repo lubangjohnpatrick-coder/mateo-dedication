@@ -983,5 +983,33 @@
     finally{button.disabled=false;}
   });
 
+  function justifyMRZ(){
+    var strip=document.querySelector('.kidstrip-mrz');
+    if(!strip||!('createTreeWalker' in document)){return;}
+    var walker=document.createTreeWalker(strip,NodeFilter.SHOW_TEXT);
+    var t1=walker.nextNode(),t2=walker.nextNode();
+    if(!t1||!t2){return;}
+    var cs=getComputedStyle(strip);
+    var inner=strip.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    if(!(inner>0)){return;}
+    var prev=strip.style.letterSpacing;
+    strip.style.letterSpacing='normal';
+    function spread(node){
+      var len=(node.textContent||'').length;
+      if(len<2){return 0;}
+      var r=document.createRange();r.selectNodeContents(node);
+      var w=r.getBoundingClientRect().width;
+      if(!(w>0)||w>=inner){return 0;}
+      return (inner-w)/(len-1);
+    }
+    var s=Math.max(spread(t1),spread(t2));
+    strip.style.letterSpacing=s>0?(Math.round(s*1000)/1000)+'px':prev;
+  }
+  function _mrzCall(ev){justifyMRZ();}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_mrzCall);}
+  else{_mrzCall();}
+  window.addEventListener('load',_mrzCall);
+  window.addEventListener('resize',_mrzCall);
+
   applyConfig();
 })();
